@@ -1,16 +1,21 @@
 # Using this dataset: http://openscience.us/repo/effort/cocomo/nasa93.html
 # Find columns that predict 'effort'
 
-import operator, math, random
+import operator, math, random, numpy, pandas, os
 from deap import base, creator, gp, tools, algorithms
 
 from scipy.io import arff
 from sklearn.metrics import mean_squared_error
-import pandas as pd
+from pprint import pprint
+
+location = os.path.join(os.getcwd(), os.path.dirname(__file__))
+data_path = os.path.join(location, '../nasa93-dem.arff')
+# data_path = os.path.realpath(location)
+
 
 # Parse data
-data_blob = arff.loadarff('../nasa93-dem.arff')
-df = pd.DataFrame(data_blob[0])
+data_blob = arff.loadarff(data_path)
+df = pandas.DataFrame(data_blob[0])
 
 # Nominal columns contain arbitrary information about categories
 # so they won't be useful to determine 'effort'
@@ -61,7 +66,6 @@ def division(x, y):
 pset.addPrimitive(division, 2)
 
 
-
 pset.addEphemeralConstant('ints', lambda: random.randint(1, 100))
 pset.renameArguments(ARG0 = 'kloc')
 pset.renameArguments(ARG1 = 'months')
@@ -107,17 +111,28 @@ toolbox.decorate('mutate', gp.staticLimit(key = operator.attrgetter('height'), m
 
 
 pop = toolbox.population(n = 200)
+hall_of_fame = tools.HallOfFame(1)
+
+multi_stats = tools.MultiStatistics(
+	mean_squared_error = tools.Statistics(lambda ind: ind.fitness.values),
+	size = tools.Statistics(len)
+)
+
+multi_stats.register('avg', numpy.mean)
+multi_stats.register('std', numpy.std)
+multi_stats.register('min', numpy.min)
+multi_stats.register('max', numpy.max)
 
 result, logbook = algorithms.eaSimple(
 	pop,
 	toolbox,
+
 	cxpb = 0.9,
 	mutpb = 0.1,
-	ngen = 200,
-	stats = None,
-	verbose = True,
+	ngen = 500,
+	stats = multi_stats,
+	halloffame = hall_of_fame,
+	verbose = True
 )
 
-for individual in result:
-	print(str(individual))
-	print()
+# pprint(hall_of_fame)
