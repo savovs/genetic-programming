@@ -1,7 +1,8 @@
 # Using this dataset: http://openscience.us/repo/effort/cocomo/nasa93.html
 # Find columns that predict 'effort'
 
-import operator, math, random, numpy, pandas, os
+import pandas as pd
+import operator, math, random, numpy, os
 from deap import base, creator, gp, tools, algorithms
 
 from scipy.io import arff
@@ -15,7 +16,7 @@ data_path = os.path.join(location, '../nasa93-dem.arff')
 
 # Parse data
 data_blob = arff.loadarff(data_path)
-df = pandas.DataFrame(data_blob[0])
+df = pd.DataFrame(data_blob[0])
 
 # Nominal columns contain arbitrary information about categories
 # so they won't be useful to determine 'effort'
@@ -35,6 +36,8 @@ pset = gp.PrimitiveSet('EFFORT', 2)
 pset.addPrimitive(operator.sub, 2)
 pset.addPrimitive(operator.mul, 2)
 pset.addPrimitive(operator.add, 2)
+pset.addPrimitive(math.sin, 1)
+pset.addPrimitive(math.cos, 1)
 
 # Square root any number
 def sqrt(x):
@@ -66,11 +69,11 @@ def division(x, y):
 pset.addPrimitive(division, 2)
 
 
-pset.addEphemeralConstant('ints', lambda: random.randint(1, 100))
+pset.addEphemeralConstant('floats', lambda: random.uniform(0.01, 10))
 pset.renameArguments(ARG0 = 'kloc')
 pset.renameArguments(ARG1 = 'months')
 
-
+# Aim to minimise fitness
 creator.create('FitnessMin', base.Fitness, weights = (-1.0,))
 creator.create('Individual', gp.PrimitiveTree, fitness = creator.FitnessMin, pset = pset)
 
@@ -89,7 +92,7 @@ def fitness(individual):
 	for loc, month in zip(kloc, months):
 		funcResults.append(func(loc, month))
 
-	# Get mean squared error between predicted and actual effort
+	# Get mean squared error between actual and predicted effort
 	mse = mean_squared_error(
 		effort,
 		funcResults
@@ -110,29 +113,39 @@ toolbox.decorate('mate', gp.staticLimit(key = operator.attrgetter('height'), max
 toolbox.decorate('mutate', gp.staticLimit(key = operator.attrgetter('height'), max_value = 17))
 
 
-pop = toolbox.population(n = 200)
+pop = toolbox.population(n = 100)
+
+# Hall of fame contains only 1 individual
 hall_of_fame = tools.HallOfFame(1)
 
-multi_stats = tools.MultiStatistics(
-	mean_squared_error = tools.Statistics(lambda ind: ind.fitness.values),
-	size = tools.Statistics(len)
-)
+# Perform statistics on fitness
+stats = tools.Statistics(lambda ind: ind.fitness.values)
 
-multi_stats.register('avg', numpy.mean)
-multi_stats.register('std', numpy.std)
-multi_stats.register('min', numpy.min)
-multi_stats.register('max', numpy.max)
+stats.register('avg', numpy.mean)
+stats.register('std', numpy.std)
+stats.register('min', numpy.min)
+stats.register('max', numpy.max)
 
-result, logbook = algorithms.eaSimple(
-	pop,
-	toolbox,
+results = []
 
-	cxpb = 0.9,
-	mutpb = 0.1,
-	ngen = 500,
-	stats = multi_stats,
-	halloffame = hall_of_fame,
-	verbose = True
-)
+for i in range(3):
+	last_generation, logbook = algorithms.eaSimple(
+		pop,
+		toolbox,
 
-# pprint(hall_of_fame)
+		cxpb = 0.9,
+		mutpb = 0.1,
+		ngen = 10,
+		stats = stats,
+		halloffame = hall_of_fame,
+		verbose = True
+	)
+
+	results.append({
+		'best': {
+			'fitness': toolbox.evaluate(hall_of_fame[0]),
+			'primitive': hall_of_fame[0]
+		},
+
+		'stats': logbook.select('gen', 'avg', 'min', 'max')
+	})
