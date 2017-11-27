@@ -46,8 +46,6 @@ pset.addPrimitive(div, 2)
 
 # High range for ephemereal helps speed in fitness improvement
 pset.addEphemeralConstant('floats', lambda: random.uniform(0.01, 10))
-pset.renameArguments(ARG0 = 'kloc')
-pset.renameArguments(ARG1 = 'months')
 
 # Aim to minimise fitness
 creator.create('FitnessMin', base.Fitness, weights = (-1.0,))
