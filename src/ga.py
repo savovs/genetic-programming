@@ -78,6 +78,6 @@ stats = tools.Statistics(lambda ind: ind.fitness.values)
 # Don't need these because ranges are too high, 
 # stats.register('avg', numpy.mean)
 # stats.register('std', numpy.std)
+# stats.register('var', numpy.var)
 
-stats.register('var', numpy.var)
 stats.register('min', numpy.min)
