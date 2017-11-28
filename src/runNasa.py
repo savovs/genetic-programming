@@ -1,4 +1,3 @@
-
 import os
 import pandas as pd
 from scipy.io import arff
@@ -6,6 +5,7 @@ from deap import algorithms
 from math import sqrt
 from sklearn.metrics import mean_squared_error
 from matplotlib import pyplot as plt
+from pprint import pprint
 
 from ga import toolbox, stats, hall_of_fame 
 
@@ -69,10 +69,11 @@ effort = data[['effort']].values.flatten().tolist()
 
 def fitness(individual):
 	# Transform the tree expression in a callable function
-	func = toolbox.compile(expr = individual)
+	func = toolbox.compile(expr=individual)
 
 	funcResults = []
 
+	# Evaluate generated function with ARG0 and ARG1
 	for loc, month in zip(kloc, months):
 		funcResults.append(func(loc, month))
 
@@ -93,18 +94,18 @@ toolbox.register('evaluate', fitness)
 results = []
 
 for i in range(1):
-	pop = toolbox.population(n = 300)
+	pop = toolbox.population(n=300)
 
 	last_generation, logbook = algorithms.eaSimple(
 		pop,
 		toolbox,
 
-		cxpb = 0.9,
-		mutpb = 0.1,
-		ngen = 100,
-		stats = stats,
-		halloffame = hall_of_fame,
-		verbose = True
+		cxpb=0.9,
+		mutpb=0.1,
+		ngen=300,
+		stats=stats,
+		halloffame=hall_of_fame,
+		verbose=True
 	)
 
 	results.append({
@@ -119,17 +120,21 @@ for i in range(1):
 statNames = ['gen', 'min']
 
 # Plot fittest iteration of algorithm
-fittest = min(results, key = lambda item: item['best']['fitness'])
+fittest = min(results, key=lambda item: item['best']['fitness'])
+
+# The best generated function
+pprint(str(fittest['best']['primitive']))
+
 
 # Make a plot figure
 fig, ax = plt.subplots()
 
 for i, stat in enumerate(fittest['stats']):
 	if i != 0:
-		plt.plot(stat, label = statNames[i])
+		plt.plot(stat, label=statNames[i])
 
 # Weka Mean absolute error baseline
-plt.axhline(831.2296, label = 'baseline', color = 'red')
+plt.axhline(831.2296, label='baseline', color='red')
 
 plt.xlabel('Generation')
 plt.ylabel('Root Mean Square Error')

@@ -8,6 +8,10 @@ from math import sqrt
 from sklearn.metrics import mean_squared_error
 from operator import itemgetter
 from matplotlib import pyplot as plt
+from sklearn.model_selection import train_test_split
+
+
+
 
 from ga import toolbox, stats, hall_of_fame 
 
@@ -47,9 +51,6 @@ EffortMM =
       0.389  * AdjFP +
    -294.1583
 
-Time taken to build model: 0 seconds
-
-=== Cross-validation ===
 === Summary ===
 
 Correlation coefficient                  0.3664
@@ -60,7 +61,6 @@ Root relative squared error            104.7467 %
 Total Number of Instances               15
 
 '''
-
 
 
 data_blob = arff.loadarff(data_path)
@@ -77,7 +77,7 @@ efforts = data[['EffortMM']].values.flatten().tolist()
 
 def fitness(individual):
 	# Transform the tree expression in a callable function
-	func = toolbox.compile(expr = individual)
+	func = toolbox.compile(expr=individual)
 
 	funcResults = []
 
@@ -103,7 +103,7 @@ toolbox.register('evaluate', fitness)
 results = []
 
 for i in range(1):
-	pop = toolbox.population(n = 300)
+	pop = toolbox.population(n=300)
 
 	last_generation, logbook = algorithms.eaSimple(
 		pop,
@@ -111,7 +111,7 @@ for i in range(1):
 
 		cxpb = 0.9,
 		mutpb = 0.1,
-		ngen = 100,
+		ngen = 300,
 		stats = stats,
 		halloffame = hall_of_fame,
 		verbose = True
@@ -129,7 +129,11 @@ for i in range(1):
 statNames = ['gen', 'min']
 
 # Plot fittest iteration of algorithm
-fittest = min(results, key = lambda item: item['best']['fitness'])
+fittest = min(results, key=lambda item: item['best']['fitness'])
+
+# The best generated function
+pprint(str(fittest['best']['primitive']))
+
 
 # Make a plot figure
 fig, ax = plt.subplots()
@@ -140,10 +144,10 @@ fig, ax = plt.subplots()
 
 for i, stat in enumerate(fittest['stats']):
 	if i != 0:
-		plt.plot(stat, label = statNames[i])
+		plt.plot(stat, label=statNames[i])
 
 # Weka Mean absolute error baseline
-plt.axhline(204.2888, label = 'baseline', color = 'red')
+plt.axhline(204.2888, label='baseline', color='red')
 
 plt.xlabel('Generation')
 plt.ylabel('Root Mean Square Error')

@@ -44,7 +44,7 @@ def div(x, y):
 
 pset.addPrimitive(div, 2)
 
-# High range for ephemereal helps speed in fitness improvement
+# Random range helps speed in fitness improvement
 pset.addEphemeralConstant('floats', lambda: random.uniform(0.01, 10))
 
 # Aim to minimise fitness
@@ -63,11 +63,11 @@ toolbox.register('mate', gp.cxOnePoint)
 toolbox.register('expr_mut', gp.genFull, min_ = 0, max_ = 2)
 toolbox.register('mutate', gp.mutUniform, expr = toolbox.expr_mut, pset = pset)
 
-# Limit the height of the tree
+# Limit the height of the tree to prevent overflow
 toolbox.decorate('mate', gp.staticLimit(key = operator.attrgetter('height'), max_value = 17))
 toolbox.decorate('mutate', gp.staticLimit(key = operator.attrgetter('height'), max_value = 17))
 
-# Hall of fame contains only 1 individual
+# Contain 1 fittest individual
 hall_of_fame = tools.HallOfFame(1)
 
 # Perform statistics on fitness
