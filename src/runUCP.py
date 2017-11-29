@@ -3,20 +3,18 @@
 import os
 from scipy.io import arff
 import pandas as pd
-from sklearn.model_selection import KFold, ShuffleSplit
-from sklearn.metrics import accuracy_score, mean_squared_error
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import KFold
 from deap import algorithms, gp
-from math import sqrt
 from operator import itemgetter
 from numpy import mean, std
 from matplotlib import pyplot as plt
 
 from ga import toolbox_from_pset, stats, hall_of_fame
+from fitness import fitness
 
+# Explore data, find fitness goals to meet:
 
 # === Weka Exploration of Data ===
-
 # Attributes:   15
 #               Simple Actors
 #               Average Actors
@@ -105,28 +103,6 @@ df = pd.get_dummies(df, columns=['Sector', 'Language', 'Methodology', 'Applicati
 pset = gp.PrimitiveSet('EFFORT', df.shape[1] - 1)
 toolbox = toolbox_from_pset(pset)
 
-def fitness(individual, dataRows = [], efforts = []):
-	# Transform the tree expression in a callable function
-	generatedFunction = toolbox.compile(expr=individual)
-
-	funcResults = []
-
-	for row in dataRows:
-		# Unpack each row and use values as args
-		funcResults.append(generatedFunction(*row))
-
-	# Get mean squared error between actual and predicted effort
-	rmse = sqrt(
-		mean_squared_error(
-			efforts,
-			funcResults
-		)
-	)
-
-	twoPointPrecision = '%.2f' % rmse
-	return float(twoPointPrecision),
-
-
 kf = KFold(n_splits = 10, shuffle = True)
 training_best_of_gen_errors = []
 testing_errors = []
@@ -146,6 +122,7 @@ for trainingIndices, testingIndices in kf.split(df):
 	toolbox.register(
 		'evaluate',
 		fitness,
+		tb=toolbox,
 		dataRows=trainingDfWithoutEffort.values.tolist(),
 		efforts=trainingDf[['Real_Effort_Person_Hours']].values.flatten().tolist()
 	)
@@ -171,6 +148,7 @@ for trainingIndices, testingIndices in kf.split(df):
 	toolbox.register(
 		'evaluate',
 		fitness,
+		tb=toolbox,
 		dataRows=testingDfWithoutEffort.values.tolist(),
 		efforts=testingDf[['Real_Effort_Person_Hours']].values.flatten().tolist()
 	)

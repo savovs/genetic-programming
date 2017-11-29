@@ -88,6 +88,11 @@ toolbox.register('evaluate', fitness)
 
 results = []
 
+
+# 
+
+
+# 
 for i in range(1):
 	pop = toolbox.population(n=300)
 
