@@ -3,33 +3,21 @@ import os
 import pandas as pd
 from pprint import pprint
 from scipy.io import arff
-from deap import algorithms
+from deap import algorithms, gp
 from math import sqrt
 from sklearn.metrics import mean_squared_error
 from operator import itemgetter
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 
+from ga import toolbox_from_pset, stats, hall_of_fame 
 
-
-
-from ga import toolbox, stats, hall_of_fame 
-
-location = os.path.join(os.getcwd(), os.path.dirname(__file__))
-data_path = os.path.join(location, '../kemerer.arff')
-
+# Explore data using Weka linear regression to see what variables matter.
 
 # With all columns in, Weka thinks ID matters, but that's not true, 
 # because it's just an arbitrary number, so no need to use it.
-
 '''
 === Weka Cross-validation ===
-
-=== Run information ===
-
-Scheme:       weka.classifiers.functions.LinearRegression -S 0 -R 1.0E-8 -num-decimal-places 4
-Relation:     kemerer-weka.filters.unsupervised.attribute.Remove-R1
-Instances:    15
 Attributes:   7
               Language
               Hardware
@@ -42,7 +30,6 @@ Test mode:    10-fold cross-validation
 
 === Classifier model (full training set) ===
 
-
 Linear Regression Model
 
 EffortMM =
@@ -54,15 +41,15 @@ EffortMM =
 === Summary ===
 
 Correlation coefficient                  0.3664
-Mean absolute error                    204.2888
 Root mean squared error                281.0625
-Relative absolute error                126.9399 %
-Root relative squared error            104.7467 %
-Total Number of Instances               15
-
 '''
 
+# Create primitive set with name and arity
+pset = gp.PrimitiveSet('EFFORT', 2)
+toolbox = toolbox_from_pset(pset)
 
+location = os.path.join(os.getcwd(), os.path.dirname(__file__))
+data_path = os.path.join(location, '../kemerer.arff')
 data_blob = arff.loadarff(data_path)
 df = pd.DataFrame(data_blob[0])
 

@@ -1,23 +1,18 @@
 import os
 import pandas as pd
 from scipy.io import arff
-from deap import algorithms
+from deap import algorithms, gp
 from math import sqrt
 from sklearn.metrics import mean_squared_error
 from matplotlib import pyplot as plt
 from pprint import pprint
 
-from ga import toolbox, stats, hall_of_fame 
+from ga import toolbox_from_pset, stats, hall_of_fame 
 
-location = os.path.join(os.getcwd(), os.path.dirname(__file__))
-data_path = os.path.join(location, '../nasa93-dem.arff')
-
-
+# Explore data using Weka linear regression to see what variables matter.
 '''
 === Weka Cross-validation output ===
 
-Scheme:       weka.classifiers.functions.LinearRegression -S 0 -R 1.0E-8 -num-decimal-places 4
-Relation:     nasa93-dem-weka.filters.unsupervised.attribute.Remove-R1-23
 Instances:    93
 Attributes:   4
               kloc
@@ -37,19 +32,19 @@ effort =
      93.0466 * months +
   -1339.2667
 
-Time taken to build model: 0 seconds
-
 === Cross-validation ===
 === Summary ===
 
 Correlation coefficient                  0.6804
-Mean absolute error                    452.64  
 Root mean squared error                831.2296
-Relative absolute error                 70.0775 %
-Root relative squared error             72.7575 %
-Total Number of Instances               93
-
 '''
+
+# Create primitive set with name and arity
+pset = gp.PrimitiveSet('EFFORT', 2)
+toolbox = toolbox_from_pset(pset)
+
+location = os.path.join(os.getcwd(), os.path.dirname(__file__))
+data_path = os.path.join(location, '../nasa93-dem.arff')
 
 # Parse data
 data_blob = arff.loadarff(data_path)
