@@ -28,20 +28,14 @@ Attributes:   7
               EffortMM
 Test mode:    10-fold cross-validation
 
-=== Classifier model (full training set) ===
-
 Linear Regression Model
 
-EffortMM =
-
-     53.4674 * Hardware +
-      0.389  * AdjFP +
-   -294.1583
+EffortMM = 53.4674 * Hardware +	0.389  * AdjFP + -294.1583 
 
 === Summary ===
 
 Correlation coefficient                  0.3664
-Root mean squared error                281.0625
+Root mean squared error                281.0625 <---------- Baseline
 '''
 
 # Create primitive set with name and arity
@@ -134,7 +128,7 @@ for i, stat in enumerate(fittest['stats']):
 		plt.plot(stat, label=statNames[i])
 
 # Weka Mean absolute error baseline
-plt.axhline(204.2888, label='baseline', color='red')
+plt.axhline(281.0625, label='Linear Regression Baseline', color='red')
 
 plt.xlabel('Generation')
 plt.ylabel('Root Mean Square Error')
@@ -142,3 +136,26 @@ plt.title('Kemerer dataset')
 plt.suptitle('Effort Estimation Using Genetic Programming')
 plt.legend()
 plt.show()
+
+# Example Resulting function
+# mul(sqrt(add(mul(sqrt(add(add(sqrt(7.667999712141599), add(sqrt(ARG1), 
+# mul(sqrt(div(sqrt(add(ARG0, ARG1)), ARG1)), add(div(ARG1, 
+# add(sqrt(2.0194298119934584), div(sqrt(ARG1), sub(9.69260900025867, 
+# add(sqrt(sqrt(ARG0)), sqrt(ARG1)))))), add(ARG0, ARG0))))), 
+# mul(sqrt(add(ARG1, sqrt(sqrt(ARG0)))), ARG1))), div(ARG1, add(ARG0, 
+# div(sqrt(ARG1), sub(9.69260900025867, mul(ARG0, 
+# add(sqrt(sqrt(add(sqrt(ARG1), add(mul(ARG0, mul(ARG0, 7.667999712141599)), 
+# ARG1)))), ARG0))))))), add(7.667999712141599, 
+# mul(sqrt(add(mul(sqrt(sqrt(add(sqrt(sqrt(sqrt(ARG0))), ARG0))), 
+# sub(div(ARG1, add(sqrt(sqrt(7.667999712141599)), div(sqrt(ARG1), 
+# sub(9.69260900025867, add(sqrt(sqrt(ARG0)), mul(ARG0, mul(ARG0, 
+# 7.667999712141599))))))), sub(add(ARG1, sqrt(2.0194298119934584)), 
+# add(sqrt(ARG1), div(div(mul(7.667999712141599, 7.667999712141599), 
+# sub(div(div(ARG1, 9.012357525628882), sqrt(ARG1)), add(sqrt(ARG0), 
+# sqrt(add(ARG0, 5.458368815782998))))), sqrt(sqrt(ARG0))))))), 
+# add(add(add(7.667999712141599, 8.421383262353041), ARG0), add(sqrt(mul(ARG0, 
+# mul(ARG0, 7.667999712141599))), div(sqrt(mul(sqrt(add(ARG1, add(sqrt(ARG1), 
+# add(ARG1, ARG1)))), ARG1)), sub(mul(ARG0, 
+# add(sqrt(sqrt(add(sqrt(7.667999712141599), add(ARG1, ARG1)))), 
+# sin(sqrt(7.667999712141599)))), 7.667999712141599)))))), div(ARG1, 
+# ARG0))))), log10(add(ARG0, sqrt(sqrt(add(ARG0, ARG1))))))

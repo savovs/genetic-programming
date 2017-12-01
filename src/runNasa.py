@@ -11,32 +11,36 @@ from ga import toolbox_from_pset, stats, hall_of_fame
 
 # Explore data using Weka linear regression to see what variables matter.
 '''
-=== Weka Cross-validation output ===
-
-Instances:    93
-Attributes:   4
-              kloc
-              effort
-              defects
-              months
-Test mode:    10-fold cross-validation
-
-=== Classifier model (full training set) ===
-
-
+=== Weka Exploratory Analysis  ===
 Linear Regression Model
 
 effort =
 
-     -3.0402 * kloc +
-     93.0466 * months +
-  -1339.2667
+   1645.381  * rely=l,vh +
+  -2154.8882 * rely=vh +
+    780.4065 * data=l,n,h +
+  -1748.3515 * cplx=l,vh,xh +
+   2064.9888 * cplx=vh,xh +
+    396.2673 * time=vh,h,xh +
+   -942.7451 * time=h,xh +
+   2279.4264 * time=xh +
+  -1181.6677 * pcap=vh,h +
+    696.6285 * pcap=h +
+    781.9602 * apex=l,vh,h +
+   -617.567  * apex=h +
+   1010.5671 * ltex=n,h +
+   -704.447  * ltex=h +
+   -474.0185 * sced=h,n +
+      6.2114 * kloc +
+     -0.1954 * defects +
+     88.5857 * months +
+  -2166.5075
 
-=== Cross-validation ===
-=== Summary ===
 
-Correlation coefficient                  0.6804
-Root mean squared error                831.2296
+=== 10-fold Cross-validation ===
+
+Correlation coefficient                  0.6421
+Root mean squared error               1085.1159
 '''
 
 # Create primitive set with name and arity
@@ -143,3 +147,26 @@ plt.suptitle('Effort Estimation Using Genetic Programming')
 plt.legend()
 
 plt.show()
+
+# Example resulting function from GA:
+# mul(sub(ARG1, 6.0425291304844135), sqrt(add(add(div(ARG1, cos(sqrt(mul(ARG1, 
+# sqrt(sub(cos(div(ARG0, ARG1)), add(cos(ARG1), sub(sub(ARG0, 
+# add(add(6.0425291304844135, ARG0), ARG1)), 1.828653421186695)))))))), 
+# add(div(ARG1, cos(sqrt(sub(add(ARG1, 6.0425291304844135), add(ARG0, 
+# sub(ARG0, add(sub(ARG0, add(add(ARG1, ARG1), ARG1)), add(ARG1, div(ARG1, 
+# cos(sub(ARG0, add(ARG1, ARG1)))))))))))), sub(mul(ARG1, ARG1), 
+# sub(cos(add(log10(add(1.68312489879983, ARG0)), 0.9044975227240548)), 
+# 1.828653421186695)))), sub(add(ARG0, 
+# sub(add(add(add(cos(2.9295970723178715), ARG0), mul(sub(add(ARG1, ARG1), 
+# sub(sub(ARG0, add(ARG1, ARG1)), 1.828653421186695)), 6.0425291304844135)), 
+# add(add(sub(ARG0, add(ARG1, sub(cos(ARG1), add(cos(ARG1), sub(sub(ARG0, 
+# add(add(6.0425291304844135, ARG0), ARG1)), 1.828653421186695))))), add(ARG1, 
+# div(ARG1, cos(sub(ARG0, add(ARG1, ARG1)))))), ARG1)), add(ARG1, ARG1))), 
+# div(add(mul(ARG1, sqrt(sub(add(sqrt(sub(ARG1, add(div(ARG1, cos(sub(ARG0, 
+# add(ARG1, ARG1)))), ARG1))), 6.0425291304844135), add(ARG0, sub(ARG0, 
+# add(ARG1, ARG1)))))), sub(sin(add(add(add(add(add(add(add(ARG1, ARG1), 
+# sqrt(ARG1)), ARG0), div(mul(2.79977835089251, ARG0), add(4.211402125706582, 
+# ARG0))), ARG0), mul(sub(add(ARG1, ARG1), div(add(add(ARG1, ARG1), add(ARG1, 
+# ARG1)), ARG0)), ARG0)), add(cos(ARG1), mul(cos(ARG0), div(4.843388281310775, 
+# sub(sub(ARG0, ARG0), 1.828653421186695)))))), add(ARG1, add(ARG1, ARG1)))), 
+# add(cos(ARG1), 0.9044975227240548))))))
