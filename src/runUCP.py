@@ -39,7 +39,13 @@ from fitness import fitness
 
 #    -340.4336 * Complex Actors +
 #      45.4729 * Complex UC +
-#     304.2088 * Sector=Service Industry,Banking,Professional Services,Wholesale & Retail,Electronics & Computers,Communication,Manufacturing +
+#     304.2088 * Sector=
+# 			Service Industry,
+# 			Banking,Professional Services,
+# 			Wholesale & Retail,
+# 			Electronics & Computers,
+# 			Communication,Manufacturing +
+
 #    -880.3201 * Sector=Communication,Manufacturing +
 #    1152.557  * Sector=Manufacturing +
 #    -862.2697 * Language=DELPHI,Visual Basic,SQL,C#,Oracle,C,Java,XML,C++,.Net,CSP +
@@ -47,8 +53,18 @@ from fitness import fitness
 #    1161.8863 * Language=Oracle,C,Java,XML,C++,.Net,CSP +
 #   -1065.6929 * Language=C,Java,XML,C++,.Net,CSP +
 #    1223.438  * Language=CSP +
-#   -1187.4421 * Methodology=Multifunctional Teams,Incremental,Waterfall,Unified Process and its variants,Rapid Application Development,Personal Software Process (PSP) +
-#    1225.1163 * Methodology=Incremental,Waterfall,Unified Process and its variants,Rapid Application Development,Personal Software Process (PSP) +
+#   -1187.4421 * Methodology=
+# 			Multifunctional Teams,
+# 			Incremental,Waterfall,
+# 			Unified Process and its variants,
+# 			Rapid Application Development,
+# 			Personal Software Process (PSP) +
+
+#    1225.1163 * Methodology=
+# 			Incremental,Waterfall,
+# 			Unified Process and its variants,
+# 			Rapid Application Development,
+# 			Personal Software Process (PSP) +
 #    1028.057  * Methodology=Rapid Application Development,Personal Software Process (PSP) +
 #     706.6409 * ApplicationType=Mathematically-Intensive Application,Real-Time Application,Real-Time application +
 #   -1137.9839 * ApplicationType=Real-Time Application,Real-Time application +
@@ -104,7 +120,6 @@ pset = gp.PrimitiveSet('EFFORT', df.shape[1] - 1)
 toolbox = toolbox_from_pset(pset)
 
 kf = KFold(n_splits = 10, shuffle = True)
-training_best_of_gen_errors = []
 testing_errors = []
 
 # Cross-validation training and testing
@@ -122,6 +137,8 @@ for trainingIndices, testingIndices in kf.split(df):
 	toolbox.register(
 		'evaluate',
 		fitness,
+
+		# Pass these to fitness function:
 		tb=toolbox,
 		dataRows=trainingDfWithoutEffort.values.tolist(),
 		efforts=trainingDf[['Real_Effort_Person_Hours']].values.flatten().tolist()
@@ -142,12 +159,13 @@ for trainingIndices, testingIndices in kf.split(df):
 	)
 
 	plt.plot(logbook.select('min'), color='gray', alpha=0.15)
-	# training_best_of_gen_errors.append(logbook.select('min'))
 
 	# Test GA, register fitness function with testing data
 	toolbox.register(
 		'evaluate',
 		fitness,
+
+		# Pass these to fitness function:
 		tb=toolbox,
 		dataRows=testingDfWithoutEffort.values.tolist(),
 		efforts=testingDf[['Real_Effort_Person_Hours']].values.flatten().tolist()
@@ -171,7 +189,7 @@ print('GA mean rmse: %0.2f (+/- %0.2f)' % (errors_mean, errors_std))
 plt.axhline(860.7491, label='Linear Regression Baseline', color='#E46161')
 plt.axhline(658.8125, label='Gaussian Processes Baseline', color='#F1B963')
 
-# Result
+# GA Result
 plt.axhline(
 	errors_mean,
 	label='Genetic Algorithm: %0.2f (+/- %0.2f)' % (errors_mean, errors_std),
@@ -184,3 +202,30 @@ plt.title('UCP dataset')
 plt.suptitle('Effort Estimation Cross-validation')
 plt.legend()
 plt.show()
+
+# Example function from GA
+# add(add(add(sub(sub(add(add(sub(sub(add(
+# 	sub(mul(9.629349975112635, 9.629349975112635), ARG7),
+# 	mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635)), ARG5), ARG7),
+# 	add(sin(add(ARG5, mul(9.629349975112635, 9.629349975112635))),
+# 	mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635))),
+# 	add(div(log10(sub(9.629349975112635, ARG7)),
+# 	mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635)), 9.629349975112635)), ARG5), ARG7),
+# 	add(mul(9.629349975112635, 9.629349975112635),
+# 	add(sub(sub(add(sub(mul(9.629349975112635, 9.629349975112635), ARG7),
+# 	mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635)), ARG5), ARG7),
+# 	add(sub(sub(add(sub(div(log10(sub(ARG7, ARG7)),
+# 	add(add(sub(ARG7, ARG7), add(9.629349975112635, ARG44)),
+# 	mul(mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635), 9.629349975112635))), ARG14),
+# 	mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635)), ARG5), ARG7),
+# 	add(div(ARG33, mul(sub(add(9.629349975112635, ARG5), 9.629349975112635), ARG30)),
+# 	add(sub(sub(add(sub(mul(sub(ARG42, ARG0), 9.629349975112635), ARG7),
+# 	mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635)), 9.629349975112635), ARG7),
+# 	add(9.629349975112635, 9.629349975112635))))))),
+# 	add(div(mul(9.629349975112635, 9.629349975112635),
+# 	add(div(log10(9.629349975112635), ARG11), 9.629349975112635)),
+# 	sub(sub(add(sub(div(div(log10(9.629349975112635), ARG11),
+# 	add(ARG7, mul(9.629349975112635, 9.629349975112635))), ARG14),
+# 	mul(mul(9.629349975112635, 9.629349975112635), 9.629349975112635)), ARG5), ARG7))),
+# 	mul(9.629349975112635, add(sub(ARG7, ARG5), 	mul(9.629349975112635, 9.629349975112635)))
+# )

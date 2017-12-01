@@ -45,12 +45,30 @@ def toolbox_from_pset(pset):
 	pset.addEphemeralConstant('floats', lambda: random.uniform(0.01, 10))
 
 	# Aim to minimise fitness
-	creator.create('FitnessMin', base.Fitness, weights = (-1.0,))
-	creator.create('Individual', gp.PrimitiveTree, fitness = creator.FitnessMin, pset = pset)
+	creator.create('FitnessMin', base.Fitness, weights=(-1.0,))
+	creator.create(
+		'Individual',
+		gp.PrimitiveTree,
+		fitness=creator.FitnessMin,
+		pset=pset
+	)
 
 	toolbox = base.Toolbox()
-	toolbox.register('expr', gp.genHalfAndHalf, pset = pset, min_ = 1, max_ = 2)
-	toolbox.register('individual', tools.initIterate, creator.Individual, toolbox.expr)
+	toolbox.register(
+		'expr',
+		gp.genHalfAndHalf,
+		pset=pset,
+		min_=1,
+		max_=2
+	)
+	
+	toolbox.register(
+		'individual',
+		tools.initIterate,
+		creator.Individual,
+		toolbox.expr
+	)
+
 	toolbox.register('population', tools.initRepeat, list, toolbox.individual)
 	toolbox.register('compile', gp.compile, pset = pset)
 
@@ -61,8 +79,15 @@ def toolbox_from_pset(pset):
 	toolbox.register('mutate', gp.mutUniform, expr = toolbox.expr_mut, pset = pset)
 
 	# Limit the height of the tree to prevent overflow
-	toolbox.decorate('mate', gp.staticLimit(key = operator.attrgetter('height'), max_value = 17))
-	toolbox.decorate('mutate', gp.staticLimit(key = operator.attrgetter('height'), max_value = 17))
+	toolbox.decorate(
+		'mate',
+		gp.staticLimit(key = operator.attrgetter('height'), max_value = 17)
+	)
+
+	toolbox.decorate(
+		'mutate',
+		gp.staticLimit(key = operator.attrgetter('height'), max_value = 17)
+	)
 
 	return toolbox
 
@@ -71,10 +96,4 @@ hall_of_fame = tools.HallOfFame(1)
 
 # Perform statistics on fitness
 stats = tools.Statistics(lambda ind: ind.fitness.values)
-
-# Don't need these because ranges are too high, 
-# stats.register('avg', numpy.mean)
-# stats.register('std', numpy.std)
-# stats.register('var', numpy.var)
-
 stats.register('min', numpy.min)
